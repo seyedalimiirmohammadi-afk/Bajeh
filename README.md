@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>فرم آنلاین گارانتی صنعت وارنا</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 body { font-family: Tahoma, sans-serif; direction: rtl; margin:0; padding:0; background:#f2f2f2;}
 .container { max-width:800px; margin:20px auto; background:#ffffff; padding:20px; border:2px solid #b2d8b2; border-radius:10px;}
@@ -82,6 +81,9 @@ Smart 51: طلایی ۶,۰۰۰,۰۰۰ / نقره‌ای ۵,۴۰۰,۰۰۰ / بر�
 
 <button onclick="generatePDF()">تولید PDF قرارداد</button>
 </div>
+
+<!-- کتابخانه html2pdf داخلی -->
+<script src="https://rawcdn.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
 <script>
 function generatePDF(){
