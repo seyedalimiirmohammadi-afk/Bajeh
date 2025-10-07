@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>فرم آنلاین گارانتی صنعت وارنا</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 body { font-family: Tahoma, sans-serif; direction: rtl; margin:0; padding:0; background:#f2f2f2;}
 .container { max-width:800px; margin:20px auto; background:#ffffff; padding:20px; border:2px solid #b2d8b2; border-radius:10px;}
@@ -26,7 +26,7 @@ button:hover { background-color:#1f5c1f; cursor:pointer;}
 <b>ماده ۱ – موضوع قرارداد:</b> ارائه خدمات گارانتی سالیانه برای دستگاه‌های صدور کارت مدل‌های Evolis PPL4, Evolis Dualys 3, QB10, Hodo, Smart 50, Smart 51 مطابق سطح گارانتی انتخابی.<br><br>
 
 <b>ماده ۲ – سطوح گارانتی:</b><br>
-🔶 طلایی: بازبینی، سرویس و تعمیر کامل قطعات، ارسال مواد مصرفی تمیزکاری، پشتیبانی تلفنی، پاسخ حداکثر ۳ روز کاری.<br>
+🔶 طلایی: بازبینی، سرویس و تعمیر کامل قطعات، ارسال مواد مصرفی جهت تمیزکاری، پشتیبانی تلفنی، پاسخ حداکثر ۳ روز کاری.<br>
 ⚪️ نقره‌ای: بازبینی و تعمیر قطعات اصلی، پشتیبانی تلفنی، پاسخ حداکثر ۵ روز کاری.<br>
 🟤 برنزی: بررسی و تعمیر اولیه، پشتیبانی تلفنی، پاسخ حداکثر ۷ روز کاری.<br><br>
 
@@ -43,7 +43,7 @@ Smart 51: طلایی ۶,۰۰۰,۰۰۰ / نقره‌ای ۵,۴۰۰,۰۰۰ / بر�
 ۳. ضربه، آب‌خوردگی و نوسانات برق شامل گارانتی نمی‌گردد و هزینه جداگانه محاسبه می‌شود.<br>
 ۴. خدمات حضوری در محل ارائه نمی‌شود.<br><br>
 
-<b>ماده ۵ – فعال‌سازی:</b> پس از بارگذاری عکس دستگاه و رسید پرداخت به شماره حساب ۱۰۰۰۱۴۳۰۷۳۸۷۱ یا کارت ۶۲۷۷۶۰۱۳۶۳۲۵۱۶۶۹ به نام سید علی میرمحمدی نزد پست‌بانک و تأیید پرداخت.<br><br>
+<b>ماده ۵ – فعال‌سازی:</b> پس از بارگذاری عکس دستگاه و رسید پرداخت به شماره حساب ۱۰۰۰۱۴۳۰۷۳۸۷۱ یا کارت ۶۲۷۷۶۰۱۳۶۳۲۵۱۶۶۹ به نام سید علی میرمحمدی و تأیید پرداخت.<br><br>
 
 <b>ماده ۶ – مشخصات طرف دوم:</b> نام مسئول، کد باجه، کد ملی، آدرس، شماره تماس.<br><br>
 
@@ -89,26 +89,9 @@ Smart 51: طلایی ۶,۰۰۰,۰۰۰ / نقره‌ای ۵,۴۰۰,۰۰۰ / بر�
 </div>
 
 <script>
-const prices = {
-"Evolis PPL4": { Gold:4000000, Silver:3600000, Bronze:3240000 },
-"Evolis Dualys 3": { Gold:4000000, Silver:3600000, Bronze:3240000 },
-"QB10": { Gold:4000000, Silver:3600000, Bronze:3240000 },
-"Hodo": { Gold:2000000, Silver:1900000, Bronze:1805000 },
-"Smart 50": { Gold:5000000, Silver:4500000, Bronze:4050000 },
-"Smart 51": { Gold:6000000, Silver:5400000, Bronze:4860000 }
-};
-
-const modelSelect=document.getElementById('model');
-const levelSelect=document.getElementById('level');
-let signaturePad;
-function updatePrice(){}
-
-modelSelect.addEventListener('change', updatePrice);
-levelSelect.addEventListener('change', updatePrice);
-
-const canvas = document.getElementById('signature-pad');
-const ctx = canvas.getContext('2d');
-let drawing = false;
+const canvas=document.getElementById('signature-pad');
+const ctx=canvas.getContext('2d');
+let drawing=false;
 canvas.addEventListener('mousedown', e=>{drawing=true;ctx.moveTo(e.offsetX,e.offsetY);});
 canvas.addEventListener('mousemove', e=>{if(drawing){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}});
 canvas.addEventListener('mouseup', ()=>{drawing=false;});
@@ -116,43 +99,33 @@ canvas.addEventListener('mouseleave', ()=>{drawing=false;});
 function clearSignature(){ctx.clearRect(0,0,canvas.width,canvas.height);}
 
 function generatePDF(){
-const { jsPDF }=window.jspdf;
-const doc=new jsPDF({orientation:"portrait"});
+const element=document.createElement('div');
+element.innerHTML=document.getElementById('contract').innerHTML;
 const name=document.getElementById('name').value;
 const code=document.getElementById('code').value;
 const national=document.getElementById('national').value;
 const address=document.getElementById('address').value;
 const phone=document.getElementById('phone').value;
-const model=modelSelect.value;
-const level=levelSelect.value;
+const model=document.getElementById('model').value;
+const level=document.getElementById('level').value;
 const receipt=document.getElementById('receipt').value;
 const photoFile=document.getElementById('devicePhoto').files[0];
-
 if(!name||!code||!national||!address||!phone||!receipt||!photoFile){alert("تمام فیلدها و عکس دستگاه را پر کنید.");return;}
-
 const reader=new FileReader();
 reader.onload=function(e){
-doc.setFont("Tahoma");
-doc.setFontSize(12);
-doc.text("شرکت فنی و مهندسی صنعت وارنا",105,10,null,null,"center");
-doc.text("قرارداد رسمی خدمات گارانتی دستگاه‌های صدور کارت",105,20,null,null,"center");
-doc.setFontSize(11);
-let y=30;
-doc.text(`نام مسئول باجه: ${name}`,10,y); y+=10;
-doc.text(`کد باجه: ${code}`,10,y); y+=10;
-doc.text(`کد ملی: ${national}`,10,y); y+=10;
-doc.text(`آدرس: ${address}`,10,y); y+=10;
-doc.text(`شماره تماس: ${phone}`,10,y); y+=10;
-doc.text(`مدل دستگاه: ${model}`,10,y); y+=10;
-doc.text(`سطح گارانتی: ${level}`,10,y); y+=10;
-doc.text(`رسید پرداخت: ${receipt}`,10,y); y+=10;
-doc.text("متن قرارداد:",10,y); y+=10;
-const contractText=document.getElementById('contract').innerText.split("\n");
-contractText.forEach(line=>{doc.text(line,10,y); y+=6;});
-doc.addImage(e.target.result,'JPEG',10,y,60,60); y+=65;
-const sigData=canvas.toDataURL();
-doc.addImage(sigData,'PNG',10,y,100,40);
-doc.save(`Garanti_${model}_${name}.pdf`);
+element.innerHTML+=`<p>نام مسئول باجه: ${name}</p>
+<p>کد باجه: ${code}</p>
+<p>کد ملی: ${national}</p>
+<p>آدرس: ${address}</p>
+<p>شماره تماس: ${phone}</p>
+<p>مدل دستگاه: ${model}</p>
+<p>سطح گارانتی: ${level}</p>
+<p>رسید پرداخت: ${receipt}</p>
+<img src="${e.target.result}" style="width:200px;"><br>
+<canvas id="sigCanvas" width="400" height="100"></canvas>`;
+const sigCanvas=document.getElementById('sigCanvas');
+sigCanvas.getContext('2d').drawImage(canvas,0,0);
+html2pdf().from(element).set({margin:10,filename:`Garanti_${model}_${name}.pdf`,html2canvas:{scale:2}}).save();
 };
 reader.readAsDataURL(photoFile);
 }
