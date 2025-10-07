@@ -13,8 +13,7 @@ label { display:block; margin-top:10px; font-weight:bold;}
 input, select, textarea { width:100%; padding:8px; margin-top:5px; box-sizing:border-box; }
 button { margin-top:20px; padding:10px; width:100%; background-color:#2a7d2a; color:white; border:none; font-size:16px; border-radius:5px;}
 button:hover { background-color:#1f5c1f; cursor:pointer;}
-#contract { background:#e6f2e6; padding:10px; border-radius:5px; max-height:400px; overflow:auto; margin-bottom:15px;}
-#signature-pad { border:1px solid #2a7d2a; height:150px; border-radius:5px; }
+#contract { background:#e6f2e6; padding:10px; border-radius:5px; margin-bottom:15px;}
 </style>
 </head>
 <body>
@@ -81,53 +80,40 @@ Smart 51: طلایی ۶,۰۰۰,۰۰۰ / نقره‌ای ۵,۴۰۰,۰۰۰ / بر�
 <label>رسید پرداخت مرحله اول:</label>
 <input type="text" id="receipt" required>
 
-<label>امضا دیجیتال:</label>
-<canvas id="signature-pad"></canvas>
-<button type="button" onclick="clearSignature()">پاک کردن امضا</button>
-
 <button onclick="generatePDF()">تولید PDF قرارداد</button>
 </div>
 
 <script>
-const canvas=document.getElementById('signature-pad');
-const ctx=canvas.getContext('2d');
-let drawing=false;
-canvas.addEventListener('mousedown', e=>{drawing=true;ctx.moveTo(e.offsetX,e.offsetY);});
-canvas.addEventListener('mousemove', e=>{if(drawing){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}});
-canvas.addEventListener('mouseup', ()=>{drawing=false;});
-canvas.addEventListener('mouseleave', ()=>{drawing=false;});
-function clearSignature(){ctx.clearRect(0,0,canvas.width,canvas.height);}
-
 function generatePDF(){
-const element=document.createElement('div');
-element.innerHTML=document.getElementById('contract').innerHTML;
-const name=document.getElementById('name').value;
-const code=document.getElementById('code').value;
-const national=document.getElementById('national').value;
-const address=document.getElementById('address').value;
-const phone=document.getElementById('phone').value;
-const model=document.getElementById('model').value;
-const level=document.getElementById('level').value;
-const receipt=document.getElementById('receipt').value;
-const photoFile=document.getElementById('devicePhoto').files[0];
-if(!name||!code||!national||!address||!phone||!receipt||!photoFile){alert("تمام فیلدها و عکس دستگاه را پر کنید.");return;}
-const reader=new FileReader();
-reader.onload=function(e){
-element.innerHTML+=`<p>نام مسئول باجه: ${name}</p>
-<p>کد باجه: ${code}</p>
-<p>کد ملی: ${national}</p>
-<p>آدرس: ${address}</p>
-<p>شماره تماس: ${phone}</p>
-<p>مدل دستگاه: ${model}</p>
-<p>سطح گارانتی: ${level}</p>
-<p>رسید پرداخت: ${receipt}</p>
-<img src="${e.target.result}" style="width:200px;"><br>
-<canvas id="sigCanvas" width="400" height="100"></canvas>`;
-const sigCanvas=document.getElementById('sigCanvas');
-sigCanvas.getContext('2d').drawImage(canvas,0,0);
-html2pdf().from(element).set({margin:10,filename:`Garanti_${model}_${name}.pdf`,html2canvas:{scale:2}}).save();
-};
-reader.readAsDataURL(photoFile);
+    const name=document.getElementById('name').value;
+    const code=document.getElementById('code').value;
+    const national=document.getElementById('national').value;
+    const address=document.getElementById('address').value;
+    const phone=document.getElementById('phone').value;
+    const model=document.getElementById('model').value;
+    const level=document.getElementById('level').value;
+    const receipt=document.getElementById('receipt').value;
+    const photoFile=document.getElementById('devicePhoto').files[0];
+    if(!name||!code||!national||!address||!phone||!receipt||!photoFile){
+        alert("تمام فیلدها و عکس دستگاه را پر کنید.");
+        return;
+    }
+    const reader=new FileReader();
+    reader.onload=function(e){
+        const div=document.createElement('div');
+        div.innerHTML=document.getElementById('contract').innerHTML+
+        `<p>نام مسئول باجه: ${name}</p>
+         <p>کد باجه: ${code}</p>
+         <p>کد ملی: ${national}</p>
+         <p>آدرس: ${address}</p>
+         <p>شماره تماس: ${phone}</p>
+         <p>مدل دستگاه: ${model}</p>
+         <p>سطح گارانتی: ${level}</p>
+         <p>رسید پرداخت: ${receipt}</p>
+         <img src="${e.target.result}" style="width:200px;">`;
+        html2pdf().from(div).set({margin:10, filename:`Garanti_${model}_${name}.pdf`, html2canvas:{scale:2}}).save();
+    };
+    reader.readAsDataURL(photoFile);
 }
 </script>
 
